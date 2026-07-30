@@ -273,9 +273,9 @@ const Page = () => {
       </div>
 
       <div className="grid h-[calc(100dvh_-_72px)] grid-cols-[minmax(0,1fr)_284px] max-[960px]:grid-cols-1 max-[680px]:h-[calc(100dvh_-_105px)]">
-        <section className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)_auto] bg-[radial-gradient(circle_at_50%_-20%,color-mix(in_srgb,var(--accent)_7%,transparent),transparent_40%),var(--page)]">
+        <section className="grid h-full min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)_auto] max-[680px]:grid-rows-[minmax(0,1fr)_auto] bg-[radial-gradient(circle_at_50%_-20%,color-mix(in_srgb,var(--accent)_7%,transparent),transparent_40%),var(--page)]">
           <div
-            className={`flex min-h-[88px] items-center justify-between gap-5 border-b border-[var(--border)] py-[18px] max-[680px]:min-h-[65px] max-[680px]:px-4 max-[680px]:py-3 ${contentPaddingClass}`}
+            className={`flex min-h-[88px] items-center justify-between gap-5 border-b border-[var(--border)] py-[18px] max-[680px]:hidden ${contentPaddingClass}`}
           >
             <div>
               <span className={`${microLabelClass} max-[680px]:hidden`}>
