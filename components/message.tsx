@@ -6,30 +6,45 @@ interface MessageProps {
 }
 
 export const Message = ({ message, isMe }: MessageProps) => {
+  const initial = message.sender.charAt(0).toUpperCase() || "?";
+
   return (
-    <div
-      className={`flex flex-col ${isMe ? "items-end" : "items-start"} space-y-1 mb-4`}
+    <article
+      className={`mb-[22px] flex max-w-[min(680px,82%)] items-end gap-[9px] max-[680px]:mb-[18px] max-[680px]:max-w-[90%] ${
+        isMe ? "ml-auto justify-end" : ""
+      }`}
     >
-      <div className="flex items-center gap-2 px-1">
-        <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">
-          {message.sender}
+      {!isMe && (
+        <span className="grid size-[30px] shrink-0 place-items-center rounded-[10px] border border-[var(--border)] bg-[var(--surface-raised)] text-[0.67rem] font-[720] text-[var(--text-soft)] max-[680px]:size-[27px] max-[680px]:rounded-[9px]">
+          {initial}
         </span>
-        <span className="text-[10px] text-zinc-600 font-mono">
-          {new Date(message.timeStamp).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </span>
+      )}
+      <div className="min-w-0">
+        <div
+          className={`mx-[3px] mb-1.5 flex items-center gap-2 ${
+            isMe ? "justify-end" : ""
+          }`}
+        >
+          <strong className="max-w-[220px] overflow-hidden text-[0.67rem] font-[680] text-ellipsis whitespace-nowrap">
+            {isMe ? "You" : message.sender}
+          </strong>
+          <span className="font-[var(--font-mono)] text-[0.57rem] text-[var(--text-faint)]">
+            {new Date(message.timeStamp).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </span>
+        </div>
+        <div
+          className={`wrap-anywhere whitespace-pre-wrap border px-3.5 py-[11px] text-[0.83rem] leading-[1.55] shadow-[var(--shadow-sm)] max-[680px]:px-3 max-[680px]:py-2.5 max-[680px]:text-[0.79rem] ${
+            isMe
+              ? "rounded-[17px_6px_17px_17px] border-transparent bg-[var(--accent)] text-[var(--accent-contrast)]"
+              : "rounded-[6px_17px_17px_17px] border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text)]"
+          }`}
+        >
+          {message.text}
+        </div>
       </div>
-      <div
-        className={`max-w-[85%] sm:max-w-[75%] px-3 sm:px-4 py-2 rounded-lg text-sm break-words whitespace-pre-wrap ${
-          isMe
-            ? "bg-green-500/10 border border-green-500/20 text-green-400"
-            : "bg-zinc-800/50 border border-zinc-700/50 text-zinc-300"
-        }`}
-      >
-        {message.text}
-      </div>
-    </div>
+    </article>
   );
 };
