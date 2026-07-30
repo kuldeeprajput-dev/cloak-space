@@ -18,6 +18,7 @@ const schema = {
       roomId: z.string(),
       participants: z.number(),
       maxParticipants: z.number(),
+      members: z.array(z.string()).optional(),
     }),
     destroy: z.object({
       isDestroyed: z.literal(true),

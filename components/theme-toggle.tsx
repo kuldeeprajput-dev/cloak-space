@@ -83,7 +83,7 @@ export const ThemeToggle = () => {
         open={isOpen}
       >
         <summary
-          className="flex h-[42px] cursor-pointer list-none select-none items-center gap-[7px] rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2.5 text-[0.66rem] font-[680] text-[var(--text-soft)] shadow-[var(--shadow-sm)] backdrop-blur-xl transition-colors duration-150 hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)] hover:text-[var(--text)] max-[680px]:w-11 max-[680px]:justify-center max-[680px]:px-0 [&::-webkit-details-marker]:hidden [&>svg]:size-[15px]"
+          className="flex h-[38px] cursor-pointer list-none select-none items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-solid)] px-3 text-[0.7rem] font-medium text-[var(--text-soft)] transition-colors duration-150 hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)] hover:text-[var(--text)] max-[680px]:w-9 max-[680px]:justify-center max-[680px]:px-0 [&::-webkit-details-marker]:hidden [&>svg]:size-[15px]"
           aria-label="Choose color palette"
           title="Choose color palette"
           onClick={(e) => {
@@ -92,12 +92,12 @@ export const ThemeToggle = () => {
           }}
         >
           <PaletteIcon />
-          <span className="max-[680px]:hidden">Colors</span>
-          <i className="size-2 rounded-full border border-[color-mix(in_srgb,var(--accent)_65%,var(--border))] bg-[var(--accent)] shadow-[0_0_0_3px_var(--accent-soft)]" />
+          <span className="max-[680px]:hidden">Themes</span>
+          <i className="size-2 rounded-full bg-[var(--accent)] max-[680px]:hidden" />
         </summary>
-        <div className="absolute top-[calc(100%+9px)] left-0 z-[100] w-[226px] animate-[palette-in_140ms_ease-out] rounded-[15px] border border-[var(--border)] bg-[var(--surface-solid)] p-[13px] shadow-[var(--shadow-md)] max-[680px]:fixed max-[680px]:top-[63px] max-[680px]:left-1/2 max-[680px]:w-[min(226px,calc(100vw-24px))] max-[680px]:-translate-x-1/2 max-[680px]:animate-none">
-          <div className="flex items-baseline justify-between gap-2.5 px-0.5 pt-px pb-[11px]">
-            <span className="text-[0.72rem] font-[720]">Color theme</span>
+        <div className="absolute top-[calc(100%+8px)] left-0 z-[100] w-[226px] animate-[palette-in_140ms_ease-out] rounded-xl border border-[var(--border)] bg-[var(--surface-solid)] p-3 max-[680px]:fixed max-[680px]:top-[63px] max-[680px]:left-1/2 max-[680px]:w-[min(226px,calc(100vw-24px))] max-[680px]:-translate-x-1/2 max-[680px]:animate-none">
+          <div className="flex items-baseline justify-between gap-2.5 px-0.5 pt-px pb-2.5">
+            <span className="text-[0.72rem] font-semibold">Color theme</span>
             <small className="text-[0.56rem] text-[var(--text-faint)]">
               Choose an accent
             </small>
@@ -109,7 +109,7 @@ export const ThemeToggle = () => {
                 <button
                   type="button"
                   key={palette.id}
-                  className={`flex h-[37px] items-center gap-2 rounded-[9px] border px-[9px] text-left text-[0.62rem] font-[650] transition-colors duration-150 hover:border-[var(--border-strong)] hover:text-[var(--text)] ${
+                  className={`flex h-9 items-center gap-2 rounded-md border px-2.5 text-left text-[0.65rem] font-medium transition-colors duration-150 hover:border-[var(--border-strong)] hover:text-[var(--text)] ${
                     isSelected
                       ? "border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[var(--accent-soft)] text-[var(--text)]"
                       : "border-transparent bg-[var(--surface-raised)] text-[var(--text-soft)]"
@@ -117,7 +117,7 @@ export const ThemeToggle = () => {
                   onClick={() => selectPalette(palette.id)}
                 >
                   <i
-                    className={`size-3 shrink-0 rounded-full border-2 border-white/65 shadow-[0_0_0_1px_var(--border)] ${palette.swatch}`}
+                    className={`size-3 shrink-0 rounded-full border border-white/60 ${palette.swatch}`}
                   />
                   <span>{palette.label}</span>
                   {isSelected && (
@@ -130,12 +130,12 @@ export const ThemeToggle = () => {
         </div>
       </details>
 
-      <div className="flex items-center gap-[3px] rounded-xl border border-[var(--border)] bg-[var(--surface)] p-[3px] shadow-[var(--shadow-sm)] backdrop-blur-xl">
+      <div className="flex items-center gap-0.5 rounded-lg border border-[var(--border)] bg-[var(--surface-solid)] p-1">
         <button
           type="button"
-          className={`flex h-[34px] items-center gap-1.5 rounded-[9px] border-0 px-[9px] text-[0.66rem] font-[680] transition-colors duration-150 hover:text-[var(--text)] [&>svg]:size-3.5 max-[380px]:w-[34px] max-[380px]:justify-center max-[380px]:px-0 max-[380px]:[&>span]:hidden ${
+          className={`flex h-[30px] items-center gap-1.5 rounded-md border-0 px-2.5 text-[0.7rem] font-medium transition-colors duration-150 hover:text-[var(--text)] [&>svg]:size-3.5 max-[380px]:w-[30px] max-[380px]:justify-center max-[380px]:px-0 max-[380px]:[&>span]:hidden ${
             currentTheme === "light"
-              ? "bg-[var(--surface-solid)] text-[var(--text)] shadow-[0_1px_4px_rgba(30,25,18,0.1)]"
+              ? "bg-[var(--surface-raised)] text-[var(--text)]"
               : "bg-transparent text-[var(--text-faint)]"
           }`}
           onClick={() => selectTheme("light")}
@@ -147,9 +147,9 @@ export const ThemeToggle = () => {
         </button>
         <button
           type="button"
-          className={`flex h-[34px] items-center gap-1.5 rounded-[9px] border-0 px-[9px] text-[0.66rem] font-[680] transition-colors duration-150 hover:text-[var(--text)] [&>svg]:size-3.5 max-[380px]:w-[34px] max-[380px]:justify-center max-[380px]:px-0 max-[380px]:[&>span]:hidden ${
+          className={`flex h-[30px] items-center gap-1.5 rounded-md border-0 px-2.5 text-[0.7rem] font-medium transition-colors duration-150 hover:text-[var(--text)] [&>svg]:size-3.5 max-[380px]:w-[30px] max-[380px]:justify-center max-[380px]:px-0 max-[380px]:[&>span]:hidden ${
             currentTheme === "dark"
-              ? "bg-[#36352f] text-[#fff8ef]"
+              ? "bg-[var(--surface-raised)] text-[var(--text)]"
               : "bg-transparent text-[var(--text-faint)]"
           }`}
           onClick={() => selectTheme("dark")}

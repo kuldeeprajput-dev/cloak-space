@@ -25,7 +25,7 @@ const rooms = new Elysia({ prefix: "/room" })
   .get(
     "/join",
     async ({ query, cookie: { "x-auth-token": token }, set }) => {
-      const { roomId } = query;
+      const { roomId, username } = query;
       const roomExists = await redis.exists(`meta:${roomId}`);
       if (!roomExists) {
         set.status = 404;
@@ -51,19 +51,35 @@ const rooms = new Elysia({ prefix: "/room" })
         ),
       );
 
+      let membersMap =
+        (await redis.hget<Record<string, string>>(
+          `meta:${roomId}`,
+          "membersMap",
+        )) || {};
+
       if (!connected.includes(userToken)) {
         if (connected.length >= MAX_ROOM_USERS) {
           set.status = 403;
           return { error: "Room is full" };
         }
         connected.push(userToken);
-        await redis.hset(`meta:${roomId}`, { connected });
       }
+
+      if (username) {
+        membersMap[userToken] = username;
+      }
+
+      await redis.hset(`meta:${roomId}`, { connected, membersMap });
+
+      const members = connected
+        .map((t) => membersMap[t])
+        .filter((name): name is string => typeof name === "string" && Boolean(name));
 
       await realtime.channel(roomId).emit("chat.presence", {
         roomId,
         participants: connected.length,
         maxParticipants: MAX_ROOM_USERS,
+        members,
       });
 
       const ttl = await redis.ttl(`meta:${roomId}`);
@@ -72,10 +88,14 @@ const rooms = new Elysia({ prefix: "/room" })
         ttl,
         participants: connected.length,
         maxParticipants: MAX_ROOM_USERS,
+        members,
       };
     },
     {
-      query: z.object({ roomId: z.string() }),
+      query: z.object({
+        roomId: z.string(),
+        username: z.string().optional(),
+      }),
     },
   )
   .delete(

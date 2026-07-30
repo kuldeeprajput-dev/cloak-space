@@ -37,7 +37,7 @@ const inputShellClass =
 const inputClass =
   "min-w-0 w-full border-0 bg-transparent text-[0.82rem] text-[var(--text)] outline-0 placeholder:text-[var(--text-faint)]";
 const primaryButtonClass =
-  "group flex min-h-[52px] w-full items-center justify-between gap-3 rounded-[14px] border-0 bg-[var(--accent)] py-0 pr-[17px] pl-5 font-[720] tracking-[-0.01em] text-[var(--accent-contrast)] shadow-[var(--shadow-accent)] transition-[background-color,transform,box-shadow] duration-150 enabled:hover:-translate-y-px enabled:hover:bg-[var(--accent-hover)] enabled:hover:shadow-[0_14px_32px_color-mix(in_srgb,var(--accent)_30%,transparent)] disabled:opacity-50 disabled:shadow-none [&>svg]:w-[19px] [&>svg]:transition-transform [&>svg]:duration-150 enabled:hover:[&>svg]:translate-x-[3px]";
+  "group flex min-h-[46px] w-full items-center justify-between gap-3 rounded-xl border-0 bg-[var(--accent)] px-4.5 text-[0.82rem] font-semibold tracking-[-0.01em] text-[var(--accent-contrast)] transition-colors duration-150 enabled:hover:bg-[var(--accent-hover)] disabled:opacity-50 [&>svg]:w-[18px] [&>svg]:transition-transform [&>svg]:duration-150 enabled:hover:[&>svg]:translate-x-1";
 
 const Page = () => {
   const { username, updateUsername } = useUsername();

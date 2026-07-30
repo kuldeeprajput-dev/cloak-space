@@ -29,6 +29,7 @@ type PresenceData = {
   roomId: string;
   participants: number;
   maxParticipants: number;
+  members?: string[];
 };
 
 const microLabelClass =
@@ -38,7 +39,7 @@ const statusDotClass =
 const contentPaddingClass =
   "px-[clamp(22px,4vw,54px)] max-[960px]:px-[max(24px,calc((100vw_-_760px)/2))]";
 const primaryButtonClass =
-  "flex min-h-[52px] w-full items-center justify-between gap-3 rounded-[14px] border-0 bg-[var(--accent)] py-0 pr-[17px] pl-5 font-[720] tracking-[-0.01em] text-[var(--accent-contrast)] shadow-[var(--shadow-accent)] transition-[background-color,transform,box-shadow] duration-150 enabled:hover:-translate-y-px enabled:hover:bg-[var(--accent-hover)] enabled:hover:shadow-[0_14px_32px_color-mix(in_srgb,var(--accent)_30%,transparent)] disabled:opacity-50 disabled:shadow-none [&>svg]:w-[19px] [&>svg]:transition-transform [&>svg]:duration-150 enabled:hover:[&>svg]:translate-x-[3px]";
+  "group flex min-h-[46px] w-full items-center justify-between gap-3 rounded-xl border-0 bg-[var(--accent)] px-4.5 text-[0.82rem] font-semibold tracking-[-0.01em] text-[var(--accent-contrast)] transition-colors duration-150 enabled:hover:bg-[var(--accent-hover)] disabled:opacity-50 [&>svg]:w-[18px] [&>svg]:transition-transform [&>svg]:duration-150 enabled:hover:[&>svg]:translate-x-1";
 
 const Page = () => {
   const param = useParams();
@@ -59,9 +60,9 @@ const Page = () => {
     error: joinError,
     isLoading: isJoining,
   } = useQuery({
-    queryKey: ["join", roomId],
+    queryKey: ["join", roomId, username],
     queryFn: async () => {
-      const res = await client.room.join.get({ query: { roomId } });
+      const res = await client.room.join.get({ query: { roomId, username } });
       if (res.error) {
         throw new Error(res.error.value.summary ?? "Failed to join room");
       }
@@ -183,7 +184,6 @@ const Page = () => {
 
     return (
       <RoomState
-        icon={isRoomFull ? <UsersIcon /> : <LinkIcon />}
         eyebrow={isRoomFull ? "Room capacity reached" : "Invitation unavailable"}
         title={isRoomFull ? "This room is full." : "This room is no longer here."}
         description={
@@ -200,7 +200,6 @@ const Page = () => {
   if (isDestroyed || timeRemaining === 0) {
     return (
       <RoomState
-        icon={<TrashIcon />}
         eyebrow="Privacy complete"
         title="The room has disappeared."
         description="The timer ended or someone closed the room. This conversation can no longer be accessed."
@@ -216,6 +215,12 @@ const Page = () => {
   const maxParticipants =
     presence?.maxParticipants ?? joinData?.maxParticipants ?? 2;
   const isUrgent = timeRemaining !== null && timeRemaining < 60;
+  const membersList = presence?.members ?? joinData?.members ?? [];
+  const otherMember = membersList.find((m) => m && m !== username);
+  const otherMessageSender = history?.find(
+    (m) => m.sender && m.sender !== username,
+  )?.sender;
+  const otherUsername = otherMember || otherMessageSender || "Guest";
 
   return (
     <main className="h-dvh overflow-hidden bg-[var(--page)]">
@@ -237,33 +242,10 @@ const Page = () => {
         </div>
 
         <div className="flex min-w-0 items-center gap-3">
-          <div
-            className={`mr-1 flex items-center gap-[9px] max-[680px]:hidden ${
-              isUrgent ? "text-[var(--danger)]" : ""
-            }`}
-          >
-            <ClockIcon
-              className={`w-[18px] ${
-                isUrgent
-                  ? "text-[var(--danger)]"
-                  : "text-[var(--warning)]"
-              }`}
-            />
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <span className="text-[0.59rem] font-[630] tracking-[0.06em] text-[var(--text-faint)] uppercase">
-                Disappears in
-              </span>
-              <strong className="font-[var(--font-mono)] text-[0.77rem] tracking-[0.02em]">
-                {timeRemaining !== null
-                  ? formatTime(timeRemaining)
-                  : "Connecting…"}
-              </strong>
-            </div>
-          </div>
           <ThemeToggle />
           <button
             type="button"
-            className="inline-flex h-[42px] items-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--danger)_28%,var(--border))] bg-[var(--danger-soft)] px-[13px] text-[0.7rem] font-bold text-[var(--danger)] transition-[background-color,transform] duration-150 enabled:hover:-translate-y-px enabled:hover:bg-[color-mix(in_srgb,var(--danger)_17%,transparent)] disabled:opacity-50 max-[680px]:w-[42px] max-[680px]:justify-center max-[680px]:px-0 [&>svg]:w-4 max-[680px]:[&>span]:hidden"
+            className="inline-flex h-[38px] items-center gap-1.5 rounded-lg border border-[color-mix(in_srgb,var(--danger)_28%,var(--border))] bg-[var(--danger-soft)] px-3 text-[0.7rem] font-medium text-[var(--danger)] transition-colors duration-150 enabled:hover:bg-[color-mix(in_srgb,var(--danger)_17%,transparent)] disabled:opacity-50 max-[680px]:w-9 max-[680px]:justify-center max-[680px]:px-0 [&>svg]:size-[15px] max-[680px]:[&>span]:hidden"
             onClick={() => destroyRoom()}
             disabled={isDestroying || !joinData}
             title="Destroy room now"
@@ -303,9 +285,30 @@ const Page = () => {
                 Just between us
               </h1>
             </div>
-            <div className="flex items-center gap-[9px] text-[0.7rem] font-[620] text-[var(--text-soft)] max-[680px]:hidden">
-              <span className={statusDotClass} />
-              {isJoining ? "Connecting" : "Secure connection"}
+            <div className="flex items-center max-[680px]:hidden">
+              <div
+                className={`flex items-center gap-2 ${
+                  isUrgent ? "text-[var(--danger)]" : ""
+                }`}
+              >
+                <ClockIcon
+                  className={`size-[17px] ${
+                    isUrgent
+                      ? "text-[var(--danger)]"
+                      : "text-[var(--accent)]"
+                  }`}
+                />
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <span className="text-[0.56rem] font-[630] tracking-[0.06em] text-[var(--text-faint)] uppercase">
+                    Disappears in
+                  </span>
+                  <strong className="font-[var(--font-mono)] text-[0.76rem] font-semibold tracking-[0.02em]">
+                    {timeRemaining !== null
+                      ? formatTime(timeRemaining)
+                      : "Connecting…"}
+                  </strong>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -458,11 +461,11 @@ const Page = () => {
             ) : (
               <div className="mt-3.5 flex items-center gap-2.5">
                 <span className="grid size-[34px] shrink-0 place-items-center rounded-[11px] bg-[var(--accent-soft)] text-[0.7rem] font-[750] text-[var(--accent)]">
-                  G
+                  {otherUsername.charAt(0).toUpperCase()}
                 </span>
                 <div className="min-w-0">
                   <strong className="mb-[3px] block overflow-hidden text-[0.69rem] font-[670] text-ellipsis whitespace-nowrap">
-                    Guest
+                    {otherUsername}
                   </strong>
                   <span className="flex items-center gap-1.5 text-[0.58rem] text-[var(--text-faint)]">
                     <span className="size-[5px] shrink-0 rounded-full bg-[var(--accent)]" />{" "}
@@ -490,14 +493,21 @@ const Page = () => {
 
           <div className="flex-1" />
 
-          <button
-            type="button"
-            className="m-4 flex items-center gap-2 border-0 bg-transparent p-2 text-[0.66rem] font-[650] text-[var(--text-faint)] transition-colors hover:text-[var(--text)] [&>svg]:w-4"
-            onClick={() => router.push("/")}
-          >
-            <ChevronLeftIcon />
-            Leave room
-          </button>
+          <div className="flex h-[110px] shrink-0 items-center justify-between border-t border-[var(--border)] px-5">
+            <button
+              type="button"
+              className="flex items-center gap-1.5 border-0 bg-transparent text-[0.66rem] font-[650] text-[var(--text-faint)] transition-colors hover:text-[var(--text)] [&>svg]:w-4"
+              onClick={() => router.push("/")}
+            >
+              <ChevronLeftIcon />
+              Leave room
+            </button>
+
+            <div className="flex items-center gap-1.5 text-[0.64rem] font-[620] text-[var(--text-soft)]">
+              <span className={statusDotClass} />
+              {isJoining ? "Connecting" : "Secure connection"}
+            </div>
+          </div>
         </aside>
       </div>
     </main>
@@ -513,7 +523,7 @@ const RoomState = ({
   onAction,
   destroyed = false,
 }: {
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   eyebrow: string;
   title: string;
   description: string;
@@ -528,15 +538,17 @@ const RoomState = ({
       <ThemeToggle />
     </header>
     <section className="relative z-[1] w-[min(440px,100%)] rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-[38px] text-center shadow-[var(--shadow-md)] backdrop-blur-[20px] max-[680px]:px-[23px] max-[680px]:py-[31px]">
-      <div
-        className={`mx-auto mb-[22px] grid size-[58px] place-items-center rounded-[19px] border ${
-          destroyed
-            ? "border-[color-mix(in_srgb,var(--danger)_25%,var(--border))] bg-[var(--danger-soft)] text-[var(--danger)]"
-            : "border-[color-mix(in_srgb,var(--accent)_25%,var(--border))] bg-[var(--accent-soft)] text-[var(--accent)]"
-        }`}
-      >
-        {icon}
-      </div>
+      {icon && (
+        <div
+          className={`mx-auto mb-[22px] grid size-[58px] place-items-center rounded-[19px] border ${
+            destroyed
+              ? "border-[color-mix(in_srgb,var(--danger)_25%,var(--border))] bg-[var(--danger-soft)] text-[var(--danger)]"
+              : "border-[color-mix(in_srgb,var(--accent)_25%,var(--border))] bg-[var(--accent-soft)] text-[var(--accent)]"
+          }`}
+        >
+          {icon}
+        </div>
+      )}
       <span className={microLabelClass}>{eyebrow}</span>
       <h1 className="mt-2 mb-3 text-[1.65rem] tracking-[-0.045em]">
         {title}
