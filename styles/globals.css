@@ -1,14 +1,21 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+:root,
+html[data-theme="light"] {
+  --page: #f3f0e9;
+  --surface: rgba(255, 252, 245, 0.88);
+  --surface-solid: #fffcf6;
+  --surface-raised: #f8f4ec;
+  --surface-subtle: #e9e4da;
+  --text: #1b1a17;
+  --text-soft: #625f58;
+  --text-faint: #918b81;
+  --border: rgba(37, 33, 27, 0.12);
+  --border-strong: rgba(37, 33, 27, 0.21);
   --accent: #d94e1b;
   --accent-hover: #bd3f12;
   --accent-soft: #f7dfd3;
   --accent-contrast: #ffffff;
-  --success: var(--accent);
-  --success-soft: var(--accent-soft);
   --danger: #b83e3a;
   --danger-soft: #f6dfdc;
   --warning: #ad652b;
@@ -21,21 +28,8 @@
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 html[data-theme="dark"] {
   --page: #11110f;
-  --page-soft: #161713;
   --surface: rgba(28, 28, 24, 0.88);
   --surface-solid: #1b1b18;
   --surface-raised: #20201c;
@@ -49,12 +43,123 @@ html[data-theme="dark"] {
   --accent-hover: #ff8050;
   --accent-soft: rgba(240, 106, 53, 0.14);
   --accent-contrast: #17120f;
-  --success: var(--accent);
-  --success-soft: var(--accent-soft);
+  --danger: #ef7870;
+  --danger-soft: rgba(222, 88, 80, 0.13);
+  --warning: #d99a61;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 22px 60px rgba(0, 0, 0, 0.34);
+  --shadow-accent: 0 12px 30px rgba(142, 52, 18, 0.25);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-jetbrains-mono);
+html[data-theme="light"][data-palette="ocean"] {
+  --accent: #176ea6;
+  --accent-hover: #0d5888;
+  --accent-soft: #dcebf3;
+  --accent-contrast: #ffffff;
+  --shadow-accent: 0 12px 26px rgba(23, 110, 166, 0.2);
+}
+
+html[data-theme="light"][data-palette="forest"] {
+  --accent: #397653;
+  --accent-hover: #285f40;
+  --accent-soft: #dcebe1;
+  --accent-contrast: #ffffff;
+  --shadow-accent: 0 12px 26px rgba(48, 112, 75, 0.2);
+}
+
+html[data-theme="light"][data-palette="rose"] {
+  --accent: #b84660;
+  --accent-hover: #9c344c;
+  --accent-soft: #f2dfe4;
+  --accent-contrast: #ffffff;
+  --shadow-accent: 0 12px 26px rgba(184, 70, 96, 0.2);
+}
+
+html[data-theme="light"][data-palette="golden"] {
+  --accent: #ad680d;
+  --accent-hover: #8e5205;
+  --accent-soft: #f4e6c8;
+  --accent-contrast: #ffffff;
+  --shadow-accent: 0 12px 26px rgba(173, 104, 13, 0.2);
+}
+
+html[data-theme="light"][data-palette="mono"] {
+  --accent: #444541;
+  --accent-hover: #292a27;
+  --accent-soft: #e2e2de;
+  --accent-contrast: #ffffff;
+  --shadow-accent: 0 12px 26px rgba(48, 49, 46, 0.16);
+}
+
+html[data-theme="dark"][data-palette="ocean"] {
+  --accent: #61acd5;
+  --accent-hover: #82c0e1;
+  --accent-soft: rgba(75, 154, 198, 0.15);
+  --accent-contrast: #0d171c;
+  --shadow-accent: 0 12px 30px rgba(27, 105, 147, 0.24);
+}
+
+html[data-theme="dark"][data-palette="forest"] {
+  --accent: #78bc90;
+  --accent-hover: #94cba7;
+  --accent-soft: rgba(87, 162, 113, 0.15);
+  --accent-contrast: #0e1811;
+  --shadow-accent: 0 12px 30px rgba(43, 119, 69, 0.24);
+}
+
+html[data-theme="dark"][data-palette="rose"] {
+  --accent: #e77c94;
+  --accent-hover: #f096aa;
+  --accent-soft: rgba(211, 93, 120, 0.15);
+  --accent-contrast: #1b0e12;
+  --shadow-accent: 0 12px 30px rgba(151, 47, 71, 0.24);
+}
+
+html[data-theme="dark"][data-palette="golden"] {
+  --accent: #dfa84d;
+  --accent-hover: #ecc06f;
+  --accent-soft: rgba(210, 151, 54, 0.15);
+  --accent-contrast: #1b1409;
+  --shadow-accent: 0 12px 30px rgba(153, 100, 16, 0.24);
+}
+
+html[data-theme="dark"][data-palette="mono"] {
+  --accent: #cfcec8;
+  --accent-hover: #e4e2dc;
+  --accent-soft: rgba(210, 208, 200, 0.13);
+  --accent-contrast: #171714;
+  --shadow-accent: 0 12px 30px rgba(0, 0, 0, 0.24);
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+:where(a, button, summary):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 36%, transparent);
+  outline-offset: 2px;
+}
+
+@keyframes palette-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
