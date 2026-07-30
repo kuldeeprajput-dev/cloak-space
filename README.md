@@ -24,14 +24,11 @@
 
 ## Application Video Walkthrough
 
-<div align="center">
-
-https://github.com/user-attachments/assets/YOUR-VIDEO-LINK-HERE
+https://github.com/user-attachments/assets/79fdc611-08b2-464f-8b3e-c996e01eb217
 
   <p align="center">
     <em>Demonstration of instant room creation, private link invitation, real-time WebSocket messaging, and auto-destruction cleanup.</em>
   </p>
-</div>
 
 ---
 
