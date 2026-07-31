@@ -51,7 +51,7 @@ const Page = () => {
   const [now, setNow] = useState<number | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { username } = useUsername();
+  const { username, clearUsername } = useUsername();
   const [isDestroyed, setIsDestroyed] = useState(false);
   const [presence, setPresence] = useState<PresenceData | null>(null);
 
@@ -112,6 +112,7 @@ const Page = () => {
       } else if (event === "chat.destroy") {
         const destroyData = data as { roomId?: string; isDestroyed: boolean };
         if (!destroyData.roomId || destroyData.roomId === roomId) {
+          clearUsername();
           setIsDestroyed(true);
         }
       }
@@ -129,6 +130,12 @@ const Page = () => {
     joinData?.ttl && joinData.joinedAt && now !== null
       ? Math.max(0, joinData.ttl - Math.floor((now - joinData.joinedAt) / 1000))
       : joinData?.ttl ?? null;
+
+  useEffect(() => {
+    if (timeRemaining === 0) {
+      clearUsername();
+    }
+  }, [timeRemaining, clearUsername]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -161,7 +168,10 @@ const Page = () => {
     mutationFn: async () => {
       await client.room.delete(undefined, { query: { roomId } });
     },
-    onSuccess: () => setIsDestroyed(true),
+    onSuccess: () => {
+      clearUsername();
+      setIsDestroyed(true);
+    },
   });
 
   const copyLink = async () => {
@@ -203,7 +213,10 @@ const Page = () => {
             : "The invitation may be incorrect, or the conversation has already expired and disappeared."
         }
         action="Return home"
-        onAction={() => router.push("/")}
+        onAction={() => {
+          clearUsername();
+          router.push("/");
+        }}
       />
     );
   }
@@ -215,7 +228,10 @@ const Page = () => {
         title="The room has disappeared."
         description="The timer ended or someone closed the room. This conversation can no longer be accessed."
         action="Start a new conversation"
-        onAction={() => router.push("/")}
+        onAction={() => {
+          clearUsername();
+          router.push("/");
+        }}
         destroyed
       />
     );

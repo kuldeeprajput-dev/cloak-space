@@ -29,6 +29,11 @@ export const useUsername = () => {
     localStorage.setItem(STORAGE_KEY, newUsername);
   };
 
+  const clearUsername = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setUsername("");
+  };
+
   useEffect(() => {
     const main = () => {
       const storedUsername = localStorage.getItem(STORAGE_KEY);
@@ -44,5 +49,5 @@ export const useUsername = () => {
     main();
   }, []);
 
-  return { username, updateUsername, isLoaded };
+  return { username, updateUsername, clearUsername, isLoaded };
 };
