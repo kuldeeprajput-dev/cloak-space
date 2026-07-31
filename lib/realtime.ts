@@ -21,6 +21,7 @@ const schema = {
       members: z.array(z.string()).optional(),
     }),
     destroy: z.object({
+      roomId: z.string().optional(),
       isDestroyed: z.literal(true),
     }),
   },

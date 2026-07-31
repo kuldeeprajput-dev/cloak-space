@@ -106,7 +106,7 @@ const rooms = new Elysia({ prefix: "/room" })
       await redis.del(`messages:${roomId}`);
       await realtime
         .channel(roomId)
-        .emit("chat.destroy", { isDestroyed: true });
+        .emit("chat.destroy", { roomId, isDestroyed: true });
       return { success: true };
     },
     {

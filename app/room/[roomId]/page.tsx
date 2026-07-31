@@ -48,12 +48,19 @@ const Page = () => {
   const queryClient = useQueryClient();
   const [copied, setCopied] = useState(false);
   const [input, setInput] = useState("");
-  const [now, setNow] = useState(() => Date.now());
+  const [now, setNow] = useState<number | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { username } = useUsername();
   const [isDestroyed, setIsDestroyed] = useState(false);
   const [presence, setPresence] = useState<PresenceData | null>(null);
+
+  useEffect(() => {
+    setPresence(null);
+    setIsDestroyed(false);
+    setCopied(false);
+    setInput("");
+  }, [roomId]);
 
   const {
     data: joinData,
@@ -103,21 +110,25 @@ const Page = () => {
         const nextPresence = data as PresenceData;
         if (nextPresence.roomId === roomId) setPresence(nextPresence);
       } else if (event === "chat.destroy") {
-        setIsDestroyed(true);
+        const destroyData = data as { roomId?: string; isDestroyed: boolean };
+        if (!destroyData.roomId || destroyData.roomId === roomId) {
+          setIsDestroyed(true);
+        }
       }
     },
   });
 
   useEffect(() => {
+    setNow(Date.now());
     if (!joinData?.ttl) return;
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, [joinData?.ttl]);
 
   const timeRemaining =
-    joinData?.ttl && joinData.joinedAt
+    joinData?.ttl && joinData.joinedAt && now !== null
       ? Math.max(0, joinData.ttl - Math.floor((now - joinData.joinedAt) / 1000))
-      : null;
+      : joinData?.ttl ?? null;
 
   useEffect(() => {
     if (scrollRef.current) {

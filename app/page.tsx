@@ -40,7 +40,7 @@ const primaryButtonClass =
   "group flex min-h-[46px] w-full items-center justify-between gap-3 rounded-xl border-0 bg-[var(--accent)] px-4.5 text-[0.82rem] font-semibold tracking-[-0.01em] text-[var(--accent-contrast)] transition-colors duration-150 enabled:hover:bg-[var(--accent-hover)] disabled:opacity-50 [&>svg]:w-[18px] [&>svg]:transition-transform [&>svg]:duration-150 enabled:hover:[&>svg]:translate-x-1 max-[680px]:min-h-[40px] max-[680px]:px-3.5 max-[680px]:text-[0.75rem] max-[680px]:[&>svg]:w-4";
 
 const Page = () => {
-  const { username, updateUsername } = useUsername();
+  const { username, updateUsername, isLoaded } = useUsername();
   const router = useRouter();
   const [mode, setMode] = useState<LobbyMode>("create");
   const [roomInput, setRoomInput] = useState("");
@@ -263,6 +263,7 @@ const Page = () => {
                     placeholder="Choose a name"
                     maxLength={40}
                     autoComplete="off"
+                    suppressHydrationWarning
                   />
                 </div>
                 <p className={fieldHelpClass}>
@@ -318,6 +319,7 @@ const Page = () => {
                         autoComplete="off"
                         aria-invalid={!!joinError}
                         aria-describedby={joinError ? "room-error" : undefined}
+                        suppressHydrationWarning
                       />
                     </div>
                     {joinError ? (
@@ -349,6 +351,7 @@ const Page = () => {
                 type="submit"
                 className={primaryButtonClass}
                 disabled={
+                  !isLoaded ||
                   !username.trim() ||
                   isCreating ||
                   (mode === "join" && !roomInput.trim())
@@ -374,7 +377,7 @@ const Page = () => {
       </section>
 
       <footer className="relative z-[1] mx-auto flex min-h-[58px] w-[min(1180px,calc(100%_-_48px))] items-center justify-between border-t border-[var(--border)] text-[0.66rem] text-[var(--text-faint)] max-[680px]:min-h-[50px] max-[680px]:w-[calc(100%_-_40px)] max-[680px]:text-[0.6rem]">
-        <span>© {new Date().getFullYear()} Cloak</span>
+        <span suppressHydrationWarning>© {new Date().getFullYear()} Cloak</span>
         <span>Your words belong to you.</span>
       </footer>
     </main>

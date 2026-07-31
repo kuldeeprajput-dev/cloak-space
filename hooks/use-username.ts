@@ -19,8 +19,10 @@ const generateRandomUsername = () => {
   const word1 = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
   return `anonymous-${word1}-${nanoid(5)}`;
 };
+
 export const useUsername = () => {
   const [username, setUsername] = useState("");
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const updateUsername = (newUsername: string) => {
     setUsername(newUsername);
@@ -32,14 +34,15 @@ export const useUsername = () => {
       const storedUsername = localStorage.getItem(STORAGE_KEY);
       if (storedUsername) {
         setUsername(storedUsername);
-        return;
+      } else {
+        const generatedUsername = generateRandomUsername();
+        localStorage.setItem(STORAGE_KEY, generatedUsername);
+        setUsername(generatedUsername);
       }
-      const generatedUsername = generateRandomUsername();
-      localStorage.setItem(STORAGE_KEY, generatedUsername);
-      setUsername(generatedUsername);
+      setIsLoaded(true);
     };
     main();
   }, []);
 
-  return { username, updateUsername };
+  return { username, updateUsername, isLoaded };
 };

@@ -28,7 +28,10 @@ export const Message = ({ message, isMe }: MessageProps) => {
           <strong className="max-w-[220px] overflow-hidden text-[0.67rem] font-[680] text-ellipsis whitespace-nowrap">
             {isMe ? "You" : message.sender}
           </strong>
-          <span className="font-[var(--font-mono)] text-[0.57rem] text-[var(--text-faint)]">
+          <span
+            className="font-[var(--font-mono)] text-[0.57rem] text-[var(--text-faint)]"
+            suppressHydrationWarning
+          >
             {new Date(message.timeStamp).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
