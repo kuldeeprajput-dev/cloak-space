@@ -51,7 +51,7 @@ const Page = () => {
   const [now, setNow] = useState<number | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { username, clearUsername } = useUsername();
+  const { username, clearUsername, isLoaded: isUsernameLoaded } = useUsername();
   const [isDestroyed, setIsDestroyed] = useState(false);
   const [presence, setPresence] = useState<PresenceData | null>(null);
 
@@ -75,7 +75,10 @@ const Page = () => {
       }
       return { ...res.data, joinedAt: Date.now() };
     },
-    enabled: !!roomId,
+    // Do not join before the username hook has finished loading. On a fresh
+    // browser this prevents a second join request from racing the first
+    // response that sets the authentication cookie.
+    enabled: !!roomId && isUsernameLoaded && !!username,
     retry: false,
   });
 
@@ -171,6 +174,17 @@ const Page = () => {
     onSuccess: () => {
       clearUsername();
       setIsDestroyed(true);
+    },
+  });
+
+  const { mutate: leaveRoom, isPending: isLeaving } = useMutation({
+    mutationFn: async () => {
+      const res = await client.room.leave.post(undefined, { query: { roomId } });
+      if (res.error) throw new Error("Could not leave this room.");
+    },
+    onSettled: () => {
+      clearUsername();
+      router.push("/");
     },
   });
 
@@ -524,7 +538,8 @@ const Page = () => {
             <button
               type="button"
               className="flex items-center gap-1.5 border-0 bg-transparent text-[0.66rem] font-[650] text-[var(--text-faint)] transition-colors hover:text-[var(--text)] [&>svg]:w-4"
-              onClick={() => router.push("/")}
+              onClick={() => leaveRoom()}
+              disabled={isLeaving}
             >
               <ChevronLeftIcon />
               Leave room

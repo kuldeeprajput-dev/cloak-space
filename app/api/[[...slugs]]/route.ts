@@ -51,7 +51,7 @@ const rooms = new Elysia({ prefix: "/room" })
         ),
       );
 
-      let membersMap =
+      const membersMap =
         (await redis.hget<Record<string, string>>(
           `meta:${roomId}`,
           "membersMap",
@@ -96,6 +96,47 @@ const rooms = new Elysia({ prefix: "/room" })
         roomId: z.string(),
         username: z.string().optional(),
       }),
+    },
+  )
+  .post(
+    "/leave",
+    async ({ query, cookie: { "x-auth-token": token } }) => {
+      const { roomId } = query;
+      const userToken = typeof token.value === "string" ? token.value : undefined;
+      if (!userToken) return { success: true };
+      if (!(await redis.exists(`meta:${roomId}`))) return { success: true };
+
+      const connectedRaw =
+        (await redis.hget<string[]>(`meta:${roomId}`, "connected")) || [];
+      const connected = connectedRaw.filter(
+        (connectedToken): connectedToken is string =>
+          typeof connectedToken === "string" && connectedToken !== userToken,
+      );
+
+      const membersMap =
+        (await redis.hget<Record<string, string>>(
+          `meta:${roomId}`,
+          "membersMap",
+        )) || {};
+      delete membersMap[userToken];
+
+      await redis.hset(`meta:${roomId}`, { connected, membersMap });
+
+      const members = connected
+        .map((connectedToken) => membersMap[connectedToken])
+        .filter((name): name is string => typeof name === "string" && Boolean(name));
+
+      await realtime.channel(roomId).emit("chat.presence", {
+        roomId,
+        participants: connected.length,
+        maxParticipants: MAX_ROOM_USERS,
+        members,
+      });
+
+      return { success: true };
+    },
+    {
+      query: z.object({ roomId: z.string() }),
     },
   )
   .delete(
